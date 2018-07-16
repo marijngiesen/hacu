@@ -1,0 +1,13 @@
+@import "../../global";
+
+.ha-button {
+  background-color: $tile-background-color;
+
+  figure {
+    color: $grey;
+
+    &.active {
+      color: #aaff00;
+    }
+  }
+}
