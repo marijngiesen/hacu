@@ -1,6 +1,19 @@
 // Import Bulma's core
 @import "~bulma/sass/utilities/_all";
 
+/* Container sizes
+
+   Multiple options:
+    1. Set to 100vw if you want the correct sizing automatically
+    2. Set to fixed pixels
+ */
+//$container-width: 960px;
+$container-width: 100vw;
+
+// Columns and rows
+$columns: 8;
+$rows: 5;
+
 // Set your colors
 $primary: $white;
 $primary-invert: findColorInvert($primary);
@@ -14,19 +27,6 @@ $nav-background-color: #5c5c5c;
 // Titles
 $title-color: $white;
 $subtitle-color: $title-color;
-
-// Columns and rows
-$columns: 8;
-$rows: 5;
-
-/* Container sizes
-
-   Multiple options:
-    1. Set to 100vw if you want the correct sizing automatically
-    2. Set to fixed pixels
- */
-$container-width: 960px;
-//$container-width: 100vw;
 
 // Border radius
 $radius: 0;

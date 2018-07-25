@@ -58,7 +58,7 @@ export default class Api {
   }
 
   public callService(domain: string, service: string, entityId?: string) {
-    let command = {type: 'call_service', domain: domain, service: service, service_data: {}}
+    const command = {type: 'call_service', domain, service, service_data: {}}
     if (domain !== 'script') {
       command.service_data = {entity_id: entityId}
     }

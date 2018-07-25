@@ -22,7 +22,7 @@ export default class HaSwitch extends Mixins(HaEntity) {
 
   get service(): Service {
     return {
-      domain: this.domain === 'group' ? 'homeassistant': this.domain,
+      domain: this.domain === 'group' ? 'homeassistant' : this.domain,
       service: this.action,
       entityId: this.entityId
     }
