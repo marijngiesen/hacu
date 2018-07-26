@@ -5,12 +5,12 @@ import Api, { RELOAD_STATES } from '@/helpers/api'
 
 @Component
 export default class App extends Vue {
-  private api: Api = new Api()
+  private readonly api: Api = new Api()
 
   public mounted() {
-    // TODO: Find a way to load the URL from a config file
-    // this.api.connect('localhost:8123')
-    this.api.connect('192.168.1.4:8123')
+    // TODO: Load URL from a config file
+    this.api.connect('localhost:8123')
+    // this.api.connect('192.168.1.4:8123')
   }
 
   public reloadStates() {
