@@ -30,11 +30,52 @@ export const CALL_SERVICE: string = 'call_service'
 export const RELOAD_STATES: string = 'reload_states'
 export const REGISTER_ENTITY: string = 'register_entity'
 
+function getSocket(url: string, isReconnect: boolean = false) {
+  function connect(resolve: any, reject: any) {
+    const socket: WebSocket = new WebSocket(url)
+
+    const closeHandler = () => {
+      if (!isReconnect) {
+        return
+      }
+
+      socket.removeEventListener('close', closeHandler)
+
+      setTimeout(() => connect(resolve, reject), 1000)
+    }
+
+    const messageHandler = (event: any) => {
+      const message = JSON.parse(event.data);
+
+      switch (message.type) {
+        case 'auth_required':
+          console.log('Not yet implemented')
+          break
+        case 'auth_ok':
+          socket.removeEventListener('message', messageHandler)
+          socket.removeEventListener('close', closeHandler)
+          socket.removeEventListener('error', closeHandler)
+          resolve(socket)
+          break
+        default:
+          console.log(`Received unhandled message type ${message.type}`)
+      }
+    }
+
+    socket.addEventListener('message', messageHandler)
+    socket.addEventListener('close', closeHandler)
+    socket.addEventListener('error', closeHandler)
+  }
+
+  return new Promise<WebSocket>((resolve, reject) => connect(resolve, reject));
+}
+
 export default class Api {
-  private webSocket!: WebSocket
+  private url!: string
+  private webSocket: WebSocket | null = null
   private connected: boolean = false
-  private ready: boolean = false
   private subscribed: boolean = false
+  private reconnecting: boolean = false
   private messageId: number = 1
   private messageHistory: string[] = []
   private entityRegistry: string[] = []
@@ -45,8 +86,8 @@ export default class Api {
   }
 
   public connect(url: string) {
-    this.webSocket = new WebSocket(`ws://${url}/api/websocket`)
-    this._setupSocketListeners()
+    this.url = `ws://${url}/api/websocket`
+    this._connect()
   }
 
   public getStates() {
@@ -68,37 +109,44 @@ export default class Api {
     this._call(command)
   }
 
+  private _connect() {
+    getSocket(this.url, this.reconnecting).then((socket) => {
+      console.log('Websocket connected')
+      this.webSocket = socket
+
+      // Set connection status
+      this.connected = true
+      this.reconnecting = false
+      this.subscribed = false
+
+      this._setupSocketListeners()
+      this.getStates()
+    })
+  }
+
   private _call(message: any) {
-    if (!this.ready) {
+    if (!this.connected) {
       console.log('Websocket connection not ready!')
       return
     }
 
-    // Add unique identifier to message
-    message = this._addUniqueId(message)
-
-    this.webSocket.send(JSON.stringify(message) + '\n')
+    // Add unique identifier to message and add it to history
+    message = this._prepare(message)
+    this.webSocket!.send(message)
   }
 
-  private _addUniqueId(message: any) {
+  private _prepare(message: any) {
     message.id = this.messageId
     this.messageHistory[this.messageId] = message.type
     this.messageId++
 
-    return message
+    return JSON.stringify(message) + '\n'
   }
 
   private _onMessage(message: any) {
     const data = JSON.parse(message.data)
 
     switch (data.type) {
-      case 'auth_ok':
-        this.ready = true
-        this.getStates()
-        break
-      case 'auth_required':
-        bus.$emit(AUTH_REQUIRED)
-        break
       case 'result':
         this._handleResult(data)
         break
@@ -120,6 +168,8 @@ export default class Api {
       bus.$emit(RESULT_ERROR, {message: 'Cannot find the source message'})
       return
     }
+
+    delete this.messageHistory[data.id]
 
     switch (type) {
       case 'get_states':
@@ -171,38 +221,56 @@ export default class Api {
     bus.$emit(`${ENTITY_STATECHANGE}${state.entity_id}`, state)
   }
 
+  private _reconnect() {
+    // Reset message history
+    this.messageHistory = []
+    this.messageId = 1
+
+    this.reconnecting = true
+    this.subscribed = false
+
+    this._connect()
+  }
+
   private _setupEventListeners() {
     bus.$on(REGISTER_ENTITY, (entityId: string) => {
+      if (this.entityRegistry.indexOf(entityId) !== -1) {
+        console.log(`Entity already registered ${entityId}`)
+        return
+      }
+
       this.entityRegistry.push(entityId)
     })
+
     bus.$on(AUTH_LOGIN, (login: object) => {
       console.log('Not implemented yet')
     })
+
     bus.$on(CALL_SERVICE, (service: Service) => {
       this.callService(service.domain, service.service, service.entityId)
     })
+
     bus.$on(RELOAD_STATES, () => {
       this.getStates()
     })
   }
 
   private _setupSocketListeners() {
-    this.webSocket.onopen = () => {
-      bus.$emit(SOCK_CONNECTED)
-      console.log('Socket connected')
-      this.connected = true
-    }
-    this.webSocket.onclose = () => {
-      bus.$emit(SOCK_DISCONNECTED)
-      console.log('Socket disconnected')
+    this.webSocket!.onclose = (status: any) => {
       this.connected = false
-    }
-    this.webSocket.onerror = (error: any) => {
-      bus.$emit(SOCK_ERROR, error)
-      console.log('Socket error: ' + error)
+      bus.$emit(SOCK_DISCONNECTED)
+
+      switch (status) {
+        case 1000:
+          console.log('Socket closed')
+          break
+        default:
+          console.log('Socket closed, reconnecting...')
+          setTimeout(() => this._reconnect(), 2000)
+      }
     }
 
-    this.webSocket.onmessage = (message: any) => {
+    this.webSocket!.onmessage = (message: any) => {
       this._onMessage(message)
     }
   }
