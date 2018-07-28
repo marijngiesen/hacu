@@ -8,8 +8,6 @@
         </div>
       </div>
     </div>
-    <!--<div class="">{{ name }}</div>-->
-    <!--<h1 class="title is-1">{{ value }} <span class="title is-3">{{ displayUnit }}</span></h1>-->
   </div>
 </template>
 <script lang="ts" src="./hasensor.ts">
