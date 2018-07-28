@@ -21,7 +21,6 @@ IN:
 
 export const SOCK_CONNECTED: string = 'sock_connected'
 export const SOCK_DISCONNECTED: string = 'sock_disconnected'
-export const SOCK_ERROR: string = 'sock_error'
 export const RESULT_ERROR: string = 'result_error'
 export const AUTH_REQUIRED: string = 'auth_required'
 export const ENTITY_STATECHANGE: string = 'entity_'
@@ -111,8 +110,10 @@ export default class Api {
 
   private _connect() {
     getSocket(this.url, this.reconnecting).then((socket) => {
-      console.log('Websocket connected')
       this.webSocket = socket
+
+      console.log('Websocket connected')
+      bus.$emit(SOCK_CONNECTED)
 
       // Set connection status
       this.connected = true

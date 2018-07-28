@@ -1,0 +1,14 @@
+@import "../../global";
+
+.ha-presence {
+  background-color: $tile-background-color;
+  padding: 0.3rem 0 !important;
+
+  figure {
+    color: $grey;
+
+    &.active {
+      color: #aaff00;
+    }
+  }
+}

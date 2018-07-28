@@ -11,6 +11,7 @@ import router from '@/router'
 import PageLink from '@/components/pagelink/pagelink'
 import Clock from '@/components/clock/clock'
 import HaButton from '@/components/habutton/habutton'
+import HaPresence from '@/components/hapresence/hapresence'
 import HaSensor from '@/components/hasensor/hasensor'
 import HaSwitch from '@/components/haswitch/haswitch'
 
@@ -20,6 +21,7 @@ Vue.component('icon', Icon)
 Vue.component('page-link', PageLink)
 Vue.component('clock', Clock)
 Vue.component('ha-button', HaButton)
+Vue.component('ha-presence', HaPresence)
 Vue.component('ha-sensor', HaSensor)
 Vue.component('ha-switch', HaSwitch)
 Vue.config.productionTip = false
