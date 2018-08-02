@@ -10,7 +10,7 @@
               <icon v-else name="user"></icon>
             </figure>
           </p>
-          <p class="heading">{{ state }}</p>
+          <p class="heading">{{ location }}</p>
         </div>
       </div>
     </div>

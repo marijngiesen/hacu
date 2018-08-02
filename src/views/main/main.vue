@@ -58,7 +58,7 @@
       <ha-switch name="Vakantie" entity-id="input_boolean.vakantie" icon="sliders-h"></ha-switch>
     </div>
     <div class="col-8 row-4">
-      <ha-switch name="CV boost" entity-id="switch.central_heater_manual" icon="sliders-h"></ha-switch>
+      <ha-switch name="CV" entity-id="switch.central_heater_manual" icon="sliders-h"></ha-switch>
     </div>
   </div>
 </template>

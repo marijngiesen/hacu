@@ -7,6 +7,10 @@ export default class HaPresence extends Mixins(HaEntity) {
   @Prop({type: String})
   public icon!: string
 
+  get location(): string {
+    return this.state === 'not_home' ? 'away' : this.state
+  }
+
   protected state: string = ''
   protected validDomains: string[] = ['device_tracker']
 
