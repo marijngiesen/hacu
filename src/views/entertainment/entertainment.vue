@@ -7,7 +7,7 @@
       <ha-switch name="Film kijken" entity-id="script.watch_movie" icon="film"></ha-switch>
     </div>
     <div class="col-3 row-3 width-2">
-      <ha-switch name="Gamen" entity-id="script.watch_movie" icon="gamepad"></ha-switch>
+      <ha-switch name="Muziek luisteren" entity-id="script.spotify_kids" icon="music"></ha-switch>
     </div>
     <div class="col-5 row-3">
       <ha-switch name="Theater mode" entity-id="input_boolean.theater" icon="regular/lightbulb"></ha-switch>

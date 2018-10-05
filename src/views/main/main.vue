@@ -7,10 +7,10 @@
       <ha-sensor name="Temperatuur" entity-id="sensor.indoor_temperature"></ha-sensor>
     </div>
     <div class="col-7 row-1">
-      <ha-presence name="Marijn" entity-id="device_tracker._marijn"></ha-presence>
+      <ha-presence name="Marijn" entity-id="device_tracker.marijn_marijn"></ha-presence>
     </div>
     <div class="col-8 row-1">
-      <ha-presence name="Marlijn" entity-id="device_tracker._marlijn"></ha-presence>
+      <ha-presence name="Marlijn" entity-id="device_tracker.marlijn_marlijn"></ha-presence>
     </div>
     <div class="col-1 row-2">
       <ha-button name="Alles uit" entity-id="script.all_turn_off" icon="power-off"></ha-button>
