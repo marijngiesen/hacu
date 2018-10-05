@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 
 import Api, { RELOAD_STATES } from '@/helpers/api'
+import Axios from 'axios'
 
 @Component
 export default class App extends Vue {
@@ -9,8 +10,10 @@ export default class App extends Vue {
 
   public mounted() {
     // TODO: Load URL from a config file
-    // this.api.connect('localhost:8123')
-    this.api.connect('192.168.1.4:8123')
+    Axios.get('/config.json')
+      .then((response: any) => {
+        this.api.connect(response.data.ha_url, response.data.auth_token)
+      })
   }
 
   public reloadStates() {

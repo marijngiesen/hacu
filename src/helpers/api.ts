@@ -29,7 +29,7 @@ export const CALL_SERVICE: string = 'call_service'
 export const RELOAD_STATES: string = 'reload_states'
 export const REGISTER_ENTITY: string = 'register_entity'
 
-function getSocket(url: string, isReconnect: boolean = false) {
+function getSocket(url: string, authToken: string, isReconnect: boolean = false) {
   function connect(resolve: any, reject: any) {
     const socket: WebSocket = new WebSocket(url)
 
@@ -48,7 +48,12 @@ function getSocket(url: string, isReconnect: boolean = false) {
 
       switch (message.type) {
         case 'auth_required':
-          console.log('Not yet implemented')
+          const authMessage = {
+            type: 'auth',
+            access_token: authToken
+          }
+          console.log('Sending authentication message')
+          socket.send(JSON.stringify(authMessage) + '\n')
           break
         case 'auth_ok':
           socket.removeEventListener('message', messageHandler)
@@ -71,6 +76,7 @@ function getSocket(url: string, isReconnect: boolean = false) {
 
 export default class Api {
   private url!: string
+  private authToken!: string
   private webSocket: WebSocket | null = null
   private connected: boolean = false
   private subscribed: boolean = false
@@ -84,8 +90,9 @@ export default class Api {
     this._setupEventListeners()
   }
 
-  public connect(url: string) {
+  public connect(url: string, authToken: string) {
     this.url = `ws://${url}/api/websocket`
+    this.authToken = authToken
     this._connect()
   }
 
@@ -109,7 +116,7 @@ export default class Api {
   }
 
   private _connect() {
-    getSocket(this.url, this.reconnecting).then((socket) => {
+    getSocket(this.url, this.authToken, this.reconnecting).then((socket) => {
       this.webSocket = socket
 
       console.log('Websocket connected')

@@ -1,5 +1,4 @@
 import Vue from 'vue'
-// import Buefy from 'buefy'
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon'
 
